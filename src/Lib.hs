@@ -5,6 +5,7 @@ module Lib
     ) where
 
 import Data.Int  (Int64)
+import qualified Data.ListLike as LL
 import qualified Data.ByteString.Lazy.Char8 as L
 
 --
@@ -16,5 +17,5 @@ intercalate' = L.intercalate . L.pack
 unlines' :: [L.ByteString] -> L.ByteString
 unlines' = intercalate' "\n"
 
-pad :: Char -> Int64 -> L.ByteString -> L.ByteString
-pad c maxLength str = str `L.append` L.replicate (maxLength - L.length str) c 
+pad :: (LL.ListLike l c, Integral i) => c -> i -> l -> l
+pad c maxLength cs = cs `LL.append` LL.replicate (fromIntegral maxLength - LL.length cs) c 

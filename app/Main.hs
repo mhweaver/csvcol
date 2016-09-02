@@ -9,6 +9,7 @@ import Data.Int  (Int64)
 
 import qualified Data.Vector as V
 import qualified Data.ByteString.Lazy.Char8 as L
+import qualified Data.ByteString.Internal as LI
 
 type Row = [L.ByteString]
 
@@ -30,7 +31,7 @@ parseCsv raw = case (decode NoHeader raw) of
 -- Take a list of maximum column lengths and a list of strings for each column, pad the strings out to the
 -- maximum length for their respective column
 rowToColumnizedString :: [Int64] -> Row -> L.ByteString
-rowToColumnizedString colWidths row = intercalate' "  " $ zipWith (pad ' ') colWidths row
+rowToColumnizedString colWidths row = intercalate' "  " $ zipWith (pad $ LI.c2w ' ') colWidths row
 
 -- Given a list of tabular data, determine that maximum width of each column
 columnWidths :: [Row] -> [Int64]
