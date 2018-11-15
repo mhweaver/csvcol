@@ -2,14 +2,14 @@ module Main where
 
 import Lib
 import Data.Csv
-import Data.List (intercalate
-                 , transpose
-                 , maximum)
-import Data.Int  (Int64)
+import Data.List                ( intercalate
+                                , transpose
+                                , maximum )
+import Data.Int                 ( Int64 )
+import Data.ByteString.Internal ( c2w )
 
 import qualified Data.Vector as V
 import qualified Data.ByteString.Lazy.Char8 as L
-import qualified Data.ByteString.Internal as LI
 
 type Row = [L.ByteString]
 
@@ -20,7 +20,6 @@ main = do
         colWidths = columnWidths csv
         tabbedCsv = unlines' . map (rowToColumnizedString colWidths) $ csv
     L.putStrLn tabbedCsv
-    return ()
 
 -- Read the raw CSV data and return structured data
 parseCsv :: L.ByteString -> V.Vector (V.Vector L.ByteString)
@@ -31,12 +30,10 @@ parseCsv raw = case (decode NoHeader raw) of
 -- Take a list of maximum column lengths and a list of strings for each column, pad the strings out to the
 -- maximum length for their respective column
 rowToColumnizedString :: [Int64] -> Row -> L.ByteString
-rowToColumnizedString colWidths row = intercalate' "  " $ zipWith (pad $ LI.c2w ' ') colWidths row
+rowToColumnizedString colWidths row = intercalate' "  " $ zipWith (pad $ c2w ' ') colWidths row
 
 -- Given a list of tabular data, determine that maximum width of each column
 columnWidths :: [Row] -> [Int64]
-columnWidths rows = colWidths where
-                      colWidths = fmap maxLength columns :: [Int64]
-                      maxLength = maximum         
-                                . fmap L.length
-                      columns   = transpose rows
+columnWidths rows = fmap maxLength columns :: [Int64] where
+                    maxLength = maximum . fmap L.length
+                    columns   = transpose rows
